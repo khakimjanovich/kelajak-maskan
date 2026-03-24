@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('validation_runs', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('want_id');
+            $table->foreignId('want_id')->constrained()->cascadeOnDelete();
             $table->string('facts_status');
             $table->string('constraints_status');
             $table->string('experience_status');

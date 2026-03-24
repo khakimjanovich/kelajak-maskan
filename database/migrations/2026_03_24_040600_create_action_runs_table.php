@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('action_runs', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('plan_revision_id');
+            $table->foreignId('plan_revision_id')->constrained()->cascadeOnDelete();
             $table->string('status');
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();

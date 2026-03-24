@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('wants', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('project_id');
+            $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->text('raw_text');
             $table->string('status');
