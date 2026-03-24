@@ -13,6 +13,12 @@
 - Filament 5 UI work is deferred to a later phase.
 - Local history is now persisted in SQLite.
 
+## Phase 2 Boundary
+
+- Phase 2 adds domain write actions and audit logging.
+- Controllers, routes, AI adapters, and UI are still deferred.
+- Future AI integrations must call write actions instead of mutating Eloquent models directly.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
