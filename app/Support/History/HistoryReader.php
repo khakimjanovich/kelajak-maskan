@@ -4,7 +4,6 @@ namespace App\Support\History;
 
 use App\Models\Project;
 use App\Models\Want;
-use Illuminate\Database\Eloquent\Builder;
 use RuntimeException;
 
 final class HistoryReader
@@ -106,16 +105,16 @@ final class HistoryReader
         $query = Want::query()
             ->where('project_id', $project->id)
             ->with([
-                'constraintSnapshots' => fn (Builder $query): Builder => $this->applyLatestOrder($query),
-                'validationRuns' => fn (Builder $query): Builder => $this->applyLatestOrder($query)
+                'constraintSnapshots' => fn ($query) => $this->applyLatestOrder($query),
+                'validationRuns' => fn ($query) => $this->applyLatestOrder($query)
                     ->with([
-                        'factSources' => fn (Builder $query): Builder => $this->applyLatestOrder($query),
+                        'factSources' => fn ($query) => $this->applyLatestOrder($query),
                     ]),
-                'planRevisions' => fn (Builder $query): Builder => $this->applyLatestOrder($query)
+                'planRevisions' => fn ($query) => $this->applyLatestOrder($query)
                     ->with([
-                        'actionRuns' => fn (Builder $query): Builder => $this->applyLatestOrder($query)
+                        'actionRuns' => fn ($query) => $this->applyLatestOrder($query)
                             ->with([
-                                'outcomeLogs' => fn (Builder $query): Builder => $this->applyLatestOrder($query),
+                                'outcomeLogs' => fn ($query) => $this->applyLatestOrder($query),
                             ]),
                     ]),
             ]);
@@ -150,7 +149,7 @@ final class HistoryReader
         );
     }
 
-    private function applyLatestOrder(Builder $query): Builder
+    private function applyLatestOrder($query)
     {
         return $query
             ->orderByDesc('created_at')
