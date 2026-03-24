@@ -26,6 +26,7 @@ Turn wants, needs, and desired outcomes into plans that can be understood, valid
    - known facts
    - assumptions
    - unresolved questions
+   - phase-ready runtime schema, if the phase changes persistence or data shape
 4. Translate the want into a draft plan: objective, scope, priorities, responsibilities, safeguards, and sequence.
 5. Run the draft plan through the gates below.
 6. For `facts` and `experience`, query trustworthy resources first. Only ask the prompter if source access, source pointers, or critical context is missing.
@@ -37,14 +38,19 @@ Turn wants, needs, and desired outcomes into plans that can be understood, valid
    - unresolved blocker
    - future enhancement
    Do not mislabel a defect as an enhancement.
-11. Restate the grounded plan in clear language.
-12. End with a final handoff block containing:
+11. If the phase changes schema or persistence behavior, define all three explicitly:
+   - test schema
+   - verification schema
+   - phase-ready schema
+   A phase is not operational until the phase-ready schema exists in the intended live environment.
+12. Restate the grounded plan in clear language.
+13. End with a final handoff block containing:
    - non-negotiables
    - assumptions
    - blockers
    - defects to fix before execution
    - deferred enhancements
-13. Stop at plan quality. Do not execute yet.
+14. Stop at plan quality. Do not execute yet.
 
 ## Validation Criteria
 
@@ -107,6 +113,7 @@ Validate the want and the plan against `ikhlas` as a whole, not as a decorative 
 - Needs become responsibilities
 - Builder intent becomes understandable
 - Planning is explicit before action starts
+- Runtime schema expectations are explicit before a phase is called usable
 
 ## Avoid
 
@@ -119,5 +126,6 @@ Validate the want and the plan against `ikhlas` as a whole, not as a decorative 
 - Discovering critical defects only after implementation has started
 - Calling a defect a future enhancement to avoid slowing down execution
 - Hiding assumptions inside confident language
+- Calling a phase finished when its phase-ready schema does not exist in the intended live environment
 - Jumping from desire straight into execution
 - Hiding responsibilities inside vague language
