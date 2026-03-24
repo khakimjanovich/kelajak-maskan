@@ -19,6 +19,16 @@
 - Controllers, routes, AI adapters, and UI are still deferred.
 - Future AI integrations must call write actions instead of mutating Eloquent models directly.
 
+## Phase 4 Boundary
+
+- History now has a CLI read path for project-memory recovery.
+- New sessions should read the SQLite history before planning a new want.
+- Available commands:
+  - `history:latest-want`
+  - `history:open-cycle`
+  - `history:summary`
+- UI, routes, controllers, JSON/API output, and AI adapters are still deferred.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
