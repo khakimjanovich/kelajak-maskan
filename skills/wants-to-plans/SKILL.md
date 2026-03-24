@@ -20,14 +20,31 @@ Turn wants, needs, and desired outcomes into plans that can be understood, valid
 
 1. Identify the want, need, concern, or desired outcome.
 2. Extract constraints, risks, resources, time, and non-negotiables.
-3. Translate the want into a draft plan: objective, scope, priorities, responsibilities, safeguards, and sequence.
-4. Run the draft plan through the gates below.
-5. For `facts` and `experience`, query trustworthy resources first. Only ask the prompter if source access, source pointers, or critical context is missing.
-6. If a gate fails because information is missing, stop and name what is missing before continuing.
-7. If the draft fails the `facts`, `constraints`, or `experience` gate, revise the plan or clarify the want, then repeat the loop only after that gate is addressed.
-8. If the draft fails the `ikhlas` gate, stop planning the want. Do not continue the loop until the want is abandoned, corrected, or purified.
-9. Restate the grounded plan in clear language.
-10. Stop at plan quality. Do not execute yet.
+3. Name the planning boundary before drafting:
+   - hard requirements
+   - optional architecture choices
+   - known facts
+   - assumptions
+   - unresolved questions
+4. Translate the want into a draft plan: objective, scope, priorities, responsibilities, safeguards, and sequence.
+5. Run the draft plan through the gates below.
+6. For `facts` and `experience`, query trustworthy resources first. Only ask the prompter if source access, source pointers, or critical context is missing.
+7. If a gate fails because information is missing, stop and name what is missing before continuing.
+8. If the draft fails the `facts`, `constraints`, or `experience` gate, revise the plan or clarify the want, then repeat the loop only after that gate is addressed.
+9. If the draft fails the `ikhlas` gate, stop planning the want. Do not continue the loop until the want is abandoned, corrected, or purified.
+10. Classify every discovered gap as one of:
+   - defect that must be fixed before execution
+   - unresolved blocker
+   - future enhancement
+   Do not mislabel a defect as an enhancement.
+11. Restate the grounded plan in clear language.
+12. End with a final handoff block containing:
+   - non-negotiables
+   - assumptions
+   - blockers
+   - defects to fix before execution
+   - deferred enhancements
+13. Stop at plan quality. Do not execute yet.
 
 ## Validation Criteria
 
@@ -84,6 +101,9 @@ Validate the want and the plan against `ikhlas` as a whole, not as a decorative 
 - Wants become structured plans
 - Plans are validated before execution
 - Failed gates become explicit
+- Hard requirements are separated from optional choices
+- Assumptions are visible instead of hidden
+- Defects are named before execution, not after
 - Needs become responsibilities
 - Builder intent becomes understandable
 - Planning is explicit before action starts
@@ -95,5 +115,9 @@ Validate the want and the plan against `ikhlas` as a whole, not as a decorative 
 - Treating an unchecked draft as ready for action
 - Continuing past a failed or unknown gate
 - Letting AI decide facts or past outcomes without source-backed validation
+- Mixing hard requirements with optional design preferences
+- Discovering critical defects only after implementation has started
+- Calling a defect a future enhancement to avoid slowing down execution
+- Hiding assumptions inside confident language
 - Jumping from desire straight into execution
 - Hiding responsibilities inside vague language
