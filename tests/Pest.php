@@ -16,8 +16,11 @@ use Tests\TestCase;
 
 pest()
     ->extend(TestCase::class)
-    ->use(RefreshDatabase::class)
     ->in('Feature');
+
+pest()
+    ->use(RefreshDatabase::class)
+    ->in('Feature/Database', 'Feature/Domain');
 
 /*
 |--------------------------------------------------------------------------
