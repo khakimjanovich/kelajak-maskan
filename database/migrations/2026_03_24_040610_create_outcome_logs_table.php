@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('outcome_logs', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('action_run_id');
+            $table->foreignId('action_run_id')->constrained()->cascadeOnDelete();
             $table->text('outcome');
             $table->text('reflection');
             $table->timestamps();

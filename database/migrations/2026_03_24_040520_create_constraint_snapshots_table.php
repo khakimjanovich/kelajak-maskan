@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('constraint_snapshots', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('want_id');
+            $table->foreignId('want_id')->constrained()->cascadeOnDelete();
             $table->json('payload');
             $table->timestamps();
         });

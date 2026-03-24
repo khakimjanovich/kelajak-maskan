@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('fact_sources', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('validation_run_id');
+            $table->foreignId('validation_run_id')->constrained()->cascadeOnDelete();
             $table->string('label');
             $table->text('url');
             $table->string('status');

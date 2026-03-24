@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('plan_revisions', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('want_id');
+            $table->foreignId('want_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('version');
             $table->longText('plan_text');
             $table->text('grounded_summary');
