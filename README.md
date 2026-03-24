@@ -1,80 +1,82 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Kelajak-Maskan
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Kelajak-Maskan is a place for the future for disciplined builders and developers.
 
-## Phase 1 Boundary
+Most people do not lose momentum because they lack ambition. They lose it because intent, constraints, decisions, and outcomes get scattered between sessions. Kelajak-Maskan is being built to give that discipline a home: a grounded record of what you wanted to build, what shaped the plan, what you validated, what you tried, and what happened next.
 
-- Phase 1 ends at the migration layer.
-- Filament 5 UI work is deferred to a later phase.
-- Local history is now persisted in SQLite.
+## Why Kelajak-Maskan Exists
 
-## Phase 2 Boundary
+Builders and developers often restart the same thinking over and over:
 
-- Phase 2 adds domain write actions and audit logging.
-- Controllers, routes, AI adapters, and UI are still deferred.
-- Future AI integrations must call write actions instead of mutating Eloquent models directly.
+- what was the actual goal
+- what constraints were already known
+- what was validated
+- what was tried
+- what was learned
 
-## Phase 4 Boundary
+Kelajak-Maskan exists to turn that lost context into durable continuity. It is meant for people who want a more disciplined way to build, review, and move forward without forgetting the path that got them there.
 
-- History now has a CLI read path for project-memory recovery.
-- New sessions should read the SQLite history before planning a new want.
-- Available commands:
-  - `history:latest-want`
-  - `history:open-cycle`
-  - `history:summary`
-- UI, routes, controllers, JSON/API output, and AI adapters are still deferred.
+## What It Does Today
 
-## About Laravel
+Today, Kelajak-Maskan is a local history engine backed by SQLite.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+It currently provides:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- project history stored locally in a structured schema
+- durable records for wants, constraint snapshots, validation runs, fact sources, plan revisions, action runs, outcome logs, and audit logs
+- audited write actions for core history events
+- CLI-first read access to the latest want, newest open cycle, and compact project summary
+- a backfill command for upgrading live SQLite history with real foreign keys
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Available commands:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+php artisan history:latest-want
+php artisan history:open-cycle
+php artisan history:summary
+php artisan history:backfill-foreign-keys
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Who It Is For
 
-## Contributing
+Kelajak-Maskan is for:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- builders who want more discipline in how they move from intention to execution
+- developers who want continuity across work sessions
+- early adopters who value grounded iteration over vague progress
 
-## Code of Conduct
+## What's Coming Next
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+The next version is focused on making this engine easier to use as a product.
 
-## Security Vulnerabilities
+That means building a more accessible surface on top of the history foundation that already exists, so capturing wants, reviewing open cycles, and carrying momentum forward no longer depends on living inside the codebase. The direction is forward, but the README will continue to describe what is already real first and what is coming next second.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Getting Started
 
-## License
+```bash
+composer install
+cp .env.example .env
+touch database/database.sqlite
+php artisan key:generate
+php artisan migrate
+php artisan serve
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+If you want to inspect the current product surface after setup:
+
+```bash
+php artisan history:latest-want
+php artisan history:open-cycle
+php artisan history:summary
+```
+
+## Current Status
+
+Kelajak-Maskan is currently an early product foundation rather than a finished end-user application.
+
+- the history model and CLI read path exist today
+- local persistence is SQLite-based
+- the product surface is still CLI-first
+- a broader UI or API layer is a next-version goal, not a shipped feature yet
+
+Laravel 13 powers the current implementation, but the product story is not Laravel itself. It is disciplined progress with memory.
