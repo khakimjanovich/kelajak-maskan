@@ -55,12 +55,13 @@ it('backfills a legacy sqlite history file, preserves original data, creates a b
     expect(tableCount($path, 'plan_revisions'))->toBe(4);
     expect(tableCount($path, 'action_runs'))->toBe(4);
     expect(tableCount($path, 'outcome_logs'))->toBe(4);
-    expect(tableCount($path, 'audit_logs'))->toBe(4);
+    expect(tableCount($path, 'audit_logs'))->toBe(7);
 
     expect(sqliteColumn($path, 'SELECT GROUP_CONCAT(id, ",") FROM wants ORDER BY id'))->toBe('1,2,3,4');
     expect(sqliteColumn($path, 'SELECT title FROM wants WHERE id = 4'))->toContain('Backfill');
-    expect(sqliteColumn($path, 'SELECT actor_ref FROM audit_logs WHERE id = 3'))->toBe('history-backfill');
-    expect(sqliteColumn($path, 'SELECT actor_ref FROM audit_logs WHERE id = 4'))->toBe('history-backfill');
+    expect(sqliteColumn($path, "SELECT COUNT(*) FROM audit_logs WHERE actor_ref = 'history-backfill'"))->toBe('5');
+    expect(sqliteColumn($path, "SELECT GROUP_CONCAT(action_name, '|') FROM (SELECT action_name FROM audit_logs WHERE actor_ref = 'history-backfill' ORDER BY id)"))
+        ->toBe('history.create_want|history.save_constraint_snapshot|history.create_plan_revision|history.create_action_run|history.log_outcome');
 });
 
 it('supports rehearsal mode without backup or history writes', function (): void {

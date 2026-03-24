@@ -2,9 +2,15 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\History\CreateActionRun;
+use App\Actions\History\CreatePlanRevision;
 use App\Actions\History\CreateWant;
+use App\Actions\History\LogOutcome;
 use App\Actions\History\SaveConstraintSnapshot;
+use App\Data\History\CreateActionRunData;
+use App\Data\History\CreatePlanRevisionData;
 use App\Data\History\CreateWantData;
+use App\Data\History\LogOutcomeData;
 use App\Data\History\SaveConstraintSnapshotData;
 use App\Models\ActionRun;
 use App\Models\FactSource;
@@ -546,25 +552,36 @@ class BackfillHistoryForeignKeys extends Command
                 ],
             ]);
 
-            $planRevision = PlanRevision::query()->create([
-                'want_id' => $want->id,
-                'version' => 1,
-                'plan_text' => 'Backup the live SQLite database, rebuild the existing history tables with real foreign keys on a working copy, replace the runtime database only after verification passes, and then record the upgrade as history.',
-                'grounded_summary' => 'The live root history schema now matches the phase-2 integrity model with preserved IDs, preserved data, and verified foreign keys.',
-            ]);
+            $timestamp = now()->toDateTimeString();
 
-            $actionRun = ActionRun::query()->create([
-                'plan_revision_id' => $planRevision->id,
-                'status' => 'completed',
-                'started_at' => now(),
-                'finished_at' => now(),
-            ]);
+            $planRevision = app(CreatePlanRevision::class)->handle(
+                new CreatePlanRevisionData(
+                    wantId: $want->id,
+                    version: 1,
+                    planText: 'Backup the live SQLite database, rebuild the existing history tables with real foreign keys on a working copy, replace the runtime database only after verification passes, and then record the upgrade as history.',
+                    groundedSummary: 'The live root history schema now matches the phase-2 integrity model with preserved IDs, preserved data, and verified foreign keys.',
+                ),
+                $actor,
+            );
 
-            OutcomeLog::query()->create([
-                'action_run_id' => $actionRun->id,
-                'outcome' => 'Backfill completed successfully and the live root history tables now enforce the expected foreign key relationships.',
-                'reflection' => 'Phase 3 made the live runtime schema truthful by upgrading the existing SQLite history tables instead of only relying on future migrations and code expectations.',
-            ]);
+            $actionRun = app(CreateActionRun::class)->handle(
+                new CreateActionRunData(
+                    planRevisionId: $planRevision->id,
+                    status: 'completed',
+                    startedAt: $timestamp,
+                    finishedAt: $timestamp,
+                ),
+                $actor,
+            );
+
+            app(LogOutcome::class)->handle(
+                new LogOutcomeData(
+                    actionRunId: $actionRun->id,
+                    outcome: 'Backfill completed successfully and the live root history tables now enforce the expected foreign key relationships.',
+                    reflection: 'Phase 3 made the live runtime schema truthful by upgrading the existing SQLite history tables instead of only relying on future migrations and code expectations.',
+                ),
+                $actor,
+            );
         });
     }
 
