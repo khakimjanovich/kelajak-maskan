@@ -4,6 +4,8 @@ namespace App\Support\ProjectContext;
 
 final class ProjectContextPayload
 {
+    public const REPO_PATH_POLICY = 'not-recorded-by-policy';
+
     /**
      * @return array{
      *     summary: string,
@@ -21,7 +23,7 @@ final class ProjectContextPayload
     {
         return [
             'summary' => 'Laravel 13 application that stores project context, wants, plans, actions, and outcomes in a local SQLite spine.',
-            'repo_path' => self::projectRepoPath($basePath),
+            'repo_path' => self::REPO_PATH_POLICY,
             'primary_branch' => 'main',
             'stack' => ['Laravel 13', 'PHP 8.5', 'SQLite', 'Pest'],
             'commands' => [
@@ -62,14 +64,8 @@ final class ProjectContextPayload
         ];
     }
 
-    private static function projectRepoPath(string $basePath): string
+    public static function safeRepoPath(): string
     {
-        $normalizedBasePath = str_replace('\\', '/', $basePath);
-
-        if (str_contains($normalizedBasePath, '/.worktrees/')) {
-            return dirname(dirname($basePath));
-        }
-
-        return $basePath;
+        return self::REPO_PATH_POLICY;
     }
 }

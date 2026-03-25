@@ -125,3 +125,39 @@ it('surfaces defect wording only from stored outcome or reflection text', functi
         ->expectsOutputToContain('defect: missing live read verification')
         ->assertExitCode(0);
 });
+
+it('stops reporting a want as the open cycle after record cycle closes that same want', function (): void {
+    $project = $this->createHistoryProject();
+
+    $want = $this->createHistoryWant($project, [
+        'title' => 'Dashboard wants phase 2',
+        'status' => 'draft',
+        'created_at' => '2026-03-25 09:00:00',
+    ]);
+    $this->createPlanRevision($want, [
+        'version' => 1,
+        'created_at' => '2026-03-25 09:05:00',
+    ]);
+
+    $this->artisan('history:record-cycle', [
+        'title' => 'Dashboard wants phase 2',
+        '--project' => 'kelajak-maskan',
+        '--want-id' => (string) $want->id,
+        '--want-status' => 'completed',
+        '--plan-text' => 'Attach the shipped dashboard work to the existing want.',
+        '--grounded-summary' => 'The summary should read the original want as completed.',
+        '--action-status' => 'completed',
+        '--started-at' => '2026-03-25 09:10:00',
+        '--finished-at' => '2026-03-25 09:15:00',
+        '--outcome' => 'Dashboard phase 2 now has a terminal recorded outcome.',
+        '--reflection' => 'Closing the original want removes the stale open-cycle reason.',
+        '--actor-ref' => 'history-record-cycle-test',
+    ])->assertExitCode(0);
+
+    $this->artisan('history:summary')
+        ->expectsOutputToContain('Latest completed outcome')
+        ->expectsOutputToContain('Dashboard phase 2 now has a terminal recorded outcome.')
+        ->expectsOutputToContain('Unresolved issues')
+        ->expectsOutputToContain('- none')
+        ->assertExitCode(0);
+});

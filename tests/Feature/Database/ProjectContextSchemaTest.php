@@ -77,6 +77,7 @@ it('seeds the live project context without docs or skill files', function (): vo
     $context = $project->fresh()->projectContext;
 
     expect($context)->not->toBeNull();
+    expect($context->repo_path)->toBe('not-recorded-by-policy');
     expect($context->key_paths)->not->toContain('docs/plans');
     expect($context->source_refs)->not->toContain('README.md');
     expect($context->source_refs)->not->toContain('skills/plans-to-action/SKILL.md');

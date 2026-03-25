@@ -1,5 +1,6 @@
 <?php
 
+use App\Support\ProjectContext\ProjectContextPayload;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +39,7 @@ return new class extends Migration
             ['project_id' => $projectId],
             [
                 'summary' => 'Laravel 13 application that stores project wants, plans, actions, and outcomes in a local SQLite history spine.',
-                'repo_path' => $this->projectContextRepoPath(),
+                'repo_path' => ProjectContextPayload::safeRepoPath(),
                 'primary_branch' => 'main',
                 'stack' => json_encode(['Laravel 13', 'PHP 8.5', 'SQLite', 'Pest']),
                 'commands' => json_encode([
@@ -79,17 +80,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('project_contexts');
-    }
-
-    private function projectContextRepoPath(): string
-    {
-        $basePath = base_path();
-        $normalizedBasePath = str_replace('\\', '/', $basePath);
-
-        if (str_contains($normalizedBasePath, '/.worktrees/')) {
-            return dirname(dirname($basePath));
-        }
-
-        return $basePath;
     }
 };

@@ -50,6 +50,8 @@ it('returns the default project context', function (): void {
     expect($output)->toContain('"stack": [');
     expect($output)->toContain('"source_refs": [');
     expect($output)->toContain('app/Console/Commands/ProjectContext.php');
+    expect($output)->not->toContain('"repo_path"');
+    expect($output)->not->toContain('/Users/example/kelajak-maskan');
     expect($output)->not->toContain('docs/plans');
     expect($output)->not->toContain('SKILL.md');
     expect($output)->not->toContain('README.md');
@@ -78,7 +80,8 @@ it('returns the matching project context for a specific slug', function (): void
     expect($exitCode)->toBe(0);
     expect($output)->toContain('"slug": "side-project"');
     expect($output)->toContain('Secondary project context.');
-    expect($output)->toContain('/Users/example/side-project');
+    expect($output)->not->toContain('"repo_path"');
+    expect($output)->not->toContain('/Users/example/side-project');
     expect($output)->not->toContain('docs/plans');
 });
 

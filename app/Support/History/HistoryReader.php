@@ -86,6 +86,45 @@ final class HistoryReader
     }
 
     /**
+     * @return array<int, HistoryCycleView>
+     */
+    public function cycleViews(string $projectSlug): array
+    {
+        $project = $this->findProject($projectSlug);
+
+        if ($project === null) {
+            return [];
+        }
+
+        $cycleViews = [];
+
+        foreach ($this->loadWants($project) as $want) {
+            $cycleViews[] = $this->buildCycleView($project, $want);
+        }
+
+        return $cycleViews;
+    }
+
+    public function cycleViewForWant(string $projectSlug, int $wantId): ?HistoryCycleView
+    {
+        $project = $this->findProject($projectSlug);
+
+        if ($project === null) {
+            return null;
+        }
+
+        $want = $this->wantsQuery($project)
+            ->whereKey($wantId)
+            ->first();
+
+        if ($want === null) {
+            return null;
+        }
+
+        return $this->buildCycleView($project, $want);
+    }
+
+    /**
      * @return array<int, string>
      */
     public function terminalActionStatuses(): array
@@ -101,6 +140,17 @@ final class HistoryReader
     }
 
     private function loadWants(Project $project, ?int $limit = null)
+    {
+        $query = $this->wantsQuery($project);
+
+        if ($limit !== null) {
+            $query->limit($limit);
+        }
+
+        return $query->get();
+    }
+
+    private function wantsQuery(Project $project)
     {
         $query = Want::query()
             ->where('project_id', $project->id)
@@ -119,13 +169,7 @@ final class HistoryReader
                     ]),
             ]);
 
-        $this->applyLatestOrder($query);
-
-        if ($limit !== null) {
-            $query->limit($limit);
-        }
-
-        return $query->get();
+        return $this->applyLatestOrder($query);
     }
 
     private function buildCycleView(Project $project, Want $want): HistoryCycleView

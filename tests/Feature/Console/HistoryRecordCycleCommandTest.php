@@ -10,8 +10,9 @@ use App\Models\Project;
 use App\Models\ValidationRun;
 use App\Models\Want;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\Console\Concerns\SeedsHistoryCycles;
 
-uses(RefreshDatabase::class);
+uses(RefreshDatabase::class, SeedsHistoryCycles::class);
 
 it('records a full history cycle through an artisan command', function (): void {
     Project::create([
@@ -128,4 +129,58 @@ it('fails clearly on invalid json input', function (): void {
 
     expect(Want::count())->toBe(0)
         ->and(AuditLog::count())->toBe(0);
+});
+
+it('can advance an existing want instead of creating a duplicate want', function (): void {
+    $project = $this->createHistoryProject();
+    $want = $this->createHistoryWant($project, [
+        'title' => 'Dashboard wants phase 2',
+        'raw_text' => 'Keep the dashboard phase 2 cycle attached to the original want.',
+        'status' => 'draft',
+        'created_at' => '2026-03-25 09:00:00',
+    ]);
+
+    $this->createPlanRevision($want, [
+        'version' => 1,
+        'plan_text' => 'Initial dashboard plan.',
+        'grounded_summary' => 'The first revision exists already.',
+        'created_at' => '2026-03-25 09:05:00',
+    ]);
+
+    $this->artisan('history:record-cycle', [
+        'title' => 'Dashboard wants phase 2',
+        '--project' => 'kelajak-maskan',
+        '--want-id' => (string) $want->id,
+        '--want-status' => 'completed',
+        '--plan-text' => 'Reconcile the existing dashboard cycle instead of duplicating it.',
+        '--grounded-summary' => 'The original dashboard want should own the final execution record.',
+        '--action-status' => 'completed',
+        '--started-at' => '2026-03-25 09:10:00',
+        '--finished-at' => '2026-03-25 09:15:00',
+        '--outcome' => 'Dashboard phase 2 is now attached to the original want.',
+        '--reflection' => 'Advancing an existing want keeps the app history cleaner.',
+        '--actor-type' => 'assistant',
+        '--actor-ref' => 'history-record-cycle-test',
+    ])
+        ->expectsOutputToContain(sprintf('Want id: %d', $want->id))
+        ->expectsOutputToContain('Plan revision id:')
+        ->expectsOutputToContain('Outcome log id:')
+        ->assertExitCode(0);
+
+    expect(Want::count())->toBe(1)
+        ->and(PlanRevision::count())->toBe(2)
+        ->and(ActionRun::count())->toBe(1)
+        ->and(OutcomeLog::count())->toBe(1)
+        ->and(AuditLog::count())->toBe(4);
+
+    $want->refresh();
+
+    expect($want->status)->toBe('completed')
+        ->and($want->title)->toBe('Dashboard wants phase 2');
+
+    $latestPlanRevision = PlanRevision::query()->latest('id')->firstOrFail();
+
+    expect($latestPlanRevision->want_id)->toBe($want->id)
+        ->and($latestPlanRevision->version)->toBe(2)
+        ->and($latestPlanRevision->plan_text)->toContain('Reconcile the existing dashboard cycle');
 });
