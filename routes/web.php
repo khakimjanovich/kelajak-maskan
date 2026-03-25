@@ -1,7 +1,8 @@
 <?php
 
+use App\Support\Dashboard\KelajakMaskanDashboardData;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', function (KelajakMaskanDashboardData $dashboard) {
+    return view('dashboard', $dashboard->build());
 });
