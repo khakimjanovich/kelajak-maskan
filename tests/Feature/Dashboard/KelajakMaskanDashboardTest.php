@@ -95,3 +95,11 @@ it('shows the first kelajak-maskan dashboard view on the root page', function ()
     $response->assertSee('Help builders make better decisions with less chat');
     $response->assertSee('Available actions');
 });
+
+it('shows a safe dashboard shell before stored project data exists', function (): void {
+    $response = $this->get('/');
+
+    $response->assertOk();
+    $response->assertSee('Kelajak-Maskan');
+    $response->assertSee('Stored project context has not been written yet.');
+});

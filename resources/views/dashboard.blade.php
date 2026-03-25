@@ -126,6 +126,16 @@
                 background: rgba(255, 255, 255, 0.04);
             }
 
+            .notice {
+                margin-top: 20px;
+                padding: 16px 18px;
+                border: 1px solid rgba(240, 170, 60, 0.24);
+                border-radius: 18px;
+                background: var(--accent-soft);
+                color: var(--ink);
+                line-height: 1.7;
+            }
+
             .grid {
                 display: grid;
                 gap: 18px;
@@ -338,6 +348,10 @@
                     <span>Phase: {{ $projectContext->current_phase }}</span>
                     <span>Branch: {{ $projectContext->primary_branch }}</span>
                 </div>
+
+                @unless ($isReady)
+                    <p class="notice">Stored project context has not been written yet. This dashboard is showing the app-defined baseline until history is recorded.</p>
+                @endunless
             </section>
 
             <section class="grid grid-primary">
