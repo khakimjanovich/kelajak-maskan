@@ -41,6 +41,7 @@ it('refreshes the default project context with current app commands and source r
     expect($context->source_refs)->toContain('app/Console/Commands/HistoryRecordCycle.php');
     expect($context->source_refs)->toContain('app/Console/Commands/ProjectRefreshContext.php');
     expect($context->current_phase)->toBe('app-owned-history-cycle-recording');
+    expect($context->repo_path)->toBe('not-recorded-by-policy');
 });
 
 it('creates a missing project context row when refreshing', function (): void {
@@ -57,6 +58,7 @@ it('creates a missing project context row when refreshing', function (): void {
 
     expect($context)->not->toBeNull();
     expect($context->commands)->toContain('php artisan project:context');
+    expect($context->repo_path)->toBe('not-recorded-by-policy');
 });
 
 it('fails clearly when the project does not exist', function (): void {

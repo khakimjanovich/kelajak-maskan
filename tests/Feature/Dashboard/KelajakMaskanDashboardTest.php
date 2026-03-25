@@ -96,6 +96,123 @@ it('shows the first kelajak-maskan dashboard view on the root page', function ()
     $response->assertSee('Available actions');
 });
 
+it('shows active wants with real derived stages and a highlighted written plan', function (): void {
+    $project = $this->createHistoryProject();
+    createDashboardProjectContext($project);
+
+    $capturedWant = $this->createHistoryWant($project, [
+        'title' => 'Capture dashboard stage needs',
+        'status' => 'active',
+        'created_at' => '2026-03-25 10:00:00',
+    ]);
+
+    $constrainedWant = $this->createHistoryWant($project, [
+        'title' => 'Constrain dashboard to read-only behavior',
+        'status' => 'active',
+        'created_at' => '2026-03-25 10:10:00',
+    ]);
+    $this->createConstraintSnapshot($constrainedWant, [
+        'created_at' => '2026-03-25 10:11:00',
+    ]);
+
+    $validatedWant = $this->createHistoryWant($project, [
+        'title' => 'Validate dashboard stage derivation',
+        'status' => 'active',
+        'created_at' => '2026-03-25 10:20:00',
+    ]);
+    $this->createValidationRun($validatedWant, [
+        'summary' => 'The stored history records are enough to derive stage without fake percentages.',
+        'created_at' => '2026-03-25 10:21:00',
+    ]);
+
+    $actingWant = $this->createHistoryWant($project, [
+        'title' => 'Render acting wants without write controls',
+        'status' => 'active',
+        'created_at' => '2026-03-25 10:30:00',
+    ]);
+    $actingPlan = $this->createPlanRevision($actingWant, [
+        'plan_text' => 'Keep the dashboard beautiful and readable while the want is still acting.',
+        'grounded_summary' => 'The active want still has implementation work in progress.',
+        'created_at' => '2026-03-25 10:31:00',
+    ]);
+    $this->createActionRun($actingPlan, [
+        'status' => 'in_progress',
+        'finished_at' => null,
+        'created_at' => '2026-03-25 10:32:00',
+    ]);
+
+    $blockedWant = $this->createHistoryWant($project, [
+        'title' => 'Block repo path leakage from the dashboard',
+        'status' => 'active',
+        'created_at' => '2026-03-25 10:40:00',
+    ]);
+    $blockedPlan = $this->createPlanRevision($blockedWant, [
+        'plan_text' => 'Remove path exposure from both the dashboard and project context output.',
+        'grounded_summary' => 'Absolute repo paths remain a blocker until both read surfaces are sanitized.',
+        'created_at' => '2026-03-25 10:41:00',
+    ]);
+    $blockedAction = $this->createActionRun($blockedPlan, [
+        'status' => 'failed',
+        'created_at' => '2026-03-25 10:42:00',
+    ]);
+    $this->createOutcomeLog($blockedAction, [
+        'outcome' => 'Blocked by absolute repo path leakage in the current dashboard surface.',
+        'reflection' => 'Treat want #15 as a hard requirement before resuming implementation.',
+        'created_at' => '2026-03-25 10:43:00',
+    ]);
+
+    $plannedWant = $this->createHistoryWant($project, [
+        'title' => 'Show a readable want focus panel',
+        'status' => 'active',
+        'created_at' => '2026-03-25 10:50:00',
+    ]);
+    $this->createPlanRevision($plannedWant, [
+        'plan_text' => 'Write the readable want focus panel and route to a read-only detail page.',
+        'grounded_summary' => 'The dashboard should surface the latest written plan for a selected active want.',
+        'created_at' => '2026-03-25 10:51:00',
+    ]);
+
+    $completedWant = $this->createHistoryWant($project, [
+        'title' => 'Ship the first dashboard shell',
+        'status' => 'completed',
+        'created_at' => '2026-03-25 09:00:00',
+    ]);
+    $completedPlan = $this->createPlanRevision($completedWant, [
+        'created_at' => '2026-03-25 09:01:00',
+    ]);
+    $completedAction = $this->createActionRun($completedPlan, [
+        'status' => 'completed',
+        'created_at' => '2026-03-25 09:02:00',
+    ]);
+    $this->createOutcomeLog($completedAction, [
+        'outcome' => 'The first dashboard shell is live and still read-only.',
+        'created_at' => '2026-03-25 09:03:00',
+    ]);
+
+    $response = $this->get('/');
+
+    $response->assertOk();
+    $response->assertSee('Active wants');
+    $response->assertSee($capturedWant->title);
+    $response->assertSee($constrainedWant->title);
+    $response->assertSee($validatedWant->title);
+    $response->assertSee($actingWant->title);
+    $response->assertSee($blockedWant->title);
+    $response->assertSee($plannedWant->title);
+    $response->assertSee('captured');
+    $response->assertSee('constrained');
+    $response->assertSee('validated');
+    $response->assertSee('acting');
+    $response->assertSee('blocked');
+    $response->assertSee('planned');
+    $response->assertSee('Want focus');
+    $response->assertSee('Write the readable want focus panel and route to a read-only detail page.');
+    $response->assertSee('Latest completed outcome');
+    $response->assertDontSee('/Users/example/kelajak-maskan');
+    $response->assertDontSee('Repo path');
+}
+);
+
 it('shows a safe dashboard shell before stored project data exists', function (): void {
     $response = $this->get('/');
 

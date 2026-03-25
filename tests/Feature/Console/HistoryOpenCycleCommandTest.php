@@ -116,3 +116,36 @@ it('prints an explicit message when no open cycle exists', function (): void {
         ->expectsOutputToContain('no open cycle')
         ->assertExitCode(0);
 });
+
+it('treats an existing want as closed after record cycle appends a completed action and outcome', function (): void {
+    $project = $this->createHistoryProject();
+
+    $want = $this->createHistoryWant($project, [
+        'title' => 'Dashboard wants phase 2',
+        'status' => 'draft',
+        'created_at' => '2026-03-25 09:00:00',
+    ]);
+    $this->createPlanRevision($want, [
+        'version' => 1,
+        'created_at' => '2026-03-25 09:05:00',
+    ]);
+
+    $this->artisan('history:record-cycle', [
+        'title' => 'Dashboard wants phase 2',
+        '--project' => 'kelajak-maskan',
+        '--want-id' => (string) $want->id,
+        '--want-status' => 'completed',
+        '--plan-text' => 'Attach the shipped dashboard work to the original want.',
+        '--grounded-summary' => 'The original want should own the terminal execution record.',
+        '--action-status' => 'completed',
+        '--started-at' => '2026-03-25 09:10:00',
+        '--finished-at' => '2026-03-25 09:15:00',
+        '--outcome' => 'Dashboard phase 2 has a recorded completed outcome.',
+        '--reflection' => 'Closing the original cycle removes the false open-cycle report.',
+        '--actor-ref' => 'history-record-cycle-test',
+    ])->assertExitCode(0);
+
+    $this->artisan('history:open-cycle')
+        ->expectsOutputToContain('no open cycle')
+        ->assertExitCode(0);
+});

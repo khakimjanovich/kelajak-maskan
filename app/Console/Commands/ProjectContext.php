@@ -38,7 +38,6 @@ class ProjectContext extends Command
                 'slug' => $project->slug,
             ],
             'summary' => $project->projectContext->summary,
-            'repo_path' => $project->projectContext->repo_path,
             'primary_branch' => $project->projectContext->primary_branch,
             'stack' => $project->projectContext->stack,
             'commands' => $project->projectContext->commands,

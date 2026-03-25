@@ -11,16 +11,17 @@
 
         <style>
             :root {
-                --ink: #f6f1df;
-                --muted: #c8bda0;
-                --line: rgba(246, 241, 223, 0.12);
-                --panel: rgba(13, 17, 24, 0.8);
-                --panel-strong: rgba(19, 25, 36, 0.94);
+                --ink: #f6efdf;
+                --muted: #c5b89b;
+                --line: rgba(246, 239, 223, 0.1);
+                --panel: rgba(15, 20, 29, 0.86);
+                --panel-strong: rgba(19, 26, 37, 0.95);
                 --accent: #f0aa3c;
-                --accent-soft: rgba(240, 170, 60, 0.18);
-                --danger: #ff7f66;
-                --bg: #081018;
-                --bg-soft: #102033;
+                --accent-soft: rgba(240, 170, 60, 0.14);
+                --accent-cool: rgba(91, 188, 255, 0.16);
+                --danger: #ff8570;
+                --bg: #071018;
+                --bg-soft: #11263b;
             }
 
             * {
@@ -33,34 +34,45 @@
                 color: var(--ink);
                 font-family: "Space Grotesk", sans-serif;
                 background:
-                    radial-gradient(circle at top, rgba(240, 170, 60, 0.16), transparent 28%),
-                    radial-gradient(circle at right, rgba(74, 179, 244, 0.14), transparent 32%),
+                    radial-gradient(circle at top, rgba(240, 170, 60, 0.18), transparent 28%),
+                    radial-gradient(circle at right, rgba(91, 188, 255, 0.14), transparent 30%),
                     linear-gradient(180deg, var(--bg-soft), var(--bg));
             }
 
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+
             .shell {
-                width: min(1180px, calc(100% - 32px));
+                width: min(1200px, calc(100% - 32px));
                 margin: 0 auto;
-                padding: 32px 0 48px;
+                padding: 28px 0 48px;
+            }
+
+            .hero,
+            .panel {
+                border: 1px solid var(--line);
+                border-radius: 28px;
+                background: var(--panel);
+                backdrop-filter: blur(14px);
+                box-shadow: 0 28px 60px rgba(0, 0, 0, 0.24);
             }
 
             .hero {
                 position: relative;
                 overflow: hidden;
                 padding: 28px;
-                border: 1px solid var(--line);
-                border-radius: 28px;
                 background:
-                    linear-gradient(135deg, rgba(240, 170, 60, 0.16), transparent 45%),
+                    linear-gradient(135deg, rgba(240, 170, 60, 0.16), transparent 42%),
                     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
                     var(--panel-strong);
-                box-shadow: 0 28px 60px rgba(0, 0, 0, 0.26);
             }
 
             .eyebrow,
+            .mono,
             .meta,
-            .chip,
-            .list-label,
+            .stage,
             .action-command {
                 font-family: "IBM Plex Mono", monospace;
             }
@@ -78,7 +90,7 @@
 
             .eyebrow::before {
                 content: "";
-                width: 48px;
+                width: 52px;
                 height: 1px;
                 background: linear-gradient(90deg, var(--accent), transparent);
             }
@@ -88,26 +100,23 @@
             h3,
             p,
             ul,
-            li,
-            dl,
-            dd,
-            dt {
+            li {
                 margin: 0;
             }
 
             .hero h1 {
                 max-width: 12ch;
-                font-size: clamp(2.7rem, 7vw, 5.2rem);
+                font-size: clamp(2.9rem, 7vw, 5.3rem);
                 line-height: 0.94;
                 letter-spacing: -0.05em;
             }
 
             .lede {
-                max-width: 680px;
+                max-width: 760px;
                 margin-top: 18px;
                 color: var(--muted);
-                font-size: 1.05rem;
-                line-height: 1.7;
+                font-size: 1.06rem;
+                line-height: 1.75;
             }
 
             .meta {
@@ -116,7 +125,7 @@
                 gap: 12px;
                 margin-top: 22px;
                 color: var(--muted);
-                font-size: 0.83rem;
+                font-size: 0.82rem;
             }
 
             .meta span {
@@ -132,7 +141,6 @@
                 border: 1px solid rgba(240, 170, 60, 0.24);
                 border-radius: 18px;
                 background: var(--accent-soft);
-                color: var(--ink);
                 line-height: 1.7;
             }
 
@@ -143,47 +151,58 @@
             }
 
             .grid-primary {
-                grid-template-columns: 1.1fr 0.9fr;
+                grid-template-columns: 0.95fr 1.05fr;
             }
 
             .grid-secondary {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .panel {
                 padding: 22px;
-                border: 1px solid var(--line);
-                border-radius: 24px;
-                background: var(--panel);
-                backdrop-filter: blur(14px);
             }
 
             .panel h2 {
-                font-size: 1.1rem;
+                font-size: 1.14rem;
                 letter-spacing: 0.02em;
             }
 
             .section-copy {
                 margin-top: 8px;
                 color: var(--muted);
-                line-height: 1.6;
+                line-height: 1.65;
             }
 
-            .context-grid {
+            .context-grid,
+            .stats-grid {
                 display: grid;
                 gap: 14px;
                 margin-top: 18px;
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
-            .context-card {
-                padding: 16px;
-                border-radius: 18px;
+            .context-card,
+            .focus-card,
+            .history-card,
+            .want-card {
+                padding: 18px;
+                border-radius: 22px;
+                border: 1px solid var(--line);
                 background: rgba(255, 255, 255, 0.035);
-                border: 1px solid rgba(255, 255, 255, 0.05);
             }
 
-            .list-label {
+            .context-card strong,
+            .history-card strong,
+            .want-card strong,
+            .focus-card strong {
+                display: block;
+                font-size: 1rem;
+                line-height: 1.45;
+            }
+
+            .card-label,
+            .focus-label,
+            .link-label {
                 display: block;
                 margin-bottom: 8px;
                 color: var(--muted);
@@ -192,18 +211,11 @@
                 text-transform: uppercase;
             }
 
-            .context-card strong,
-            .history-title {
-                display: block;
-                font-size: 1rem;
-                line-height: 1.4;
-            }
-
             .stack-list,
-            .wants-list,
-            .details-list,
             .capability-list,
-            .actions-list {
+            .actions-list,
+            .wants-list,
+            .detail-list {
                 display: grid;
                 gap: 10px;
                 margin-top: 18px;
@@ -211,55 +223,114 @@
                 list-style: none;
             }
 
-            .stack-list {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .chip {
-                padding: 12px 14px;
-                border-radius: 16px;
-                border: 1px solid var(--line);
-                background: rgba(255, 255, 255, 0.04);
-                color: var(--ink);
-                font-size: 0.83rem;
-            }
-
-            .history-card {
-                margin-top: 18px;
-                padding: 18px;
-                border-radius: 20px;
-                border: 1px solid var(--line);
-                background:
-                    linear-gradient(180deg, rgba(240, 170, 60, 0.08), transparent 60%),
-                    rgba(255, 255, 255, 0.03);
-            }
-
-            .history-title {
-                font-size: 1.02rem;
-            }
-
-            .history-meta,
-            .details-list li,
-            .wants-list li {
-                color: var(--muted);
-            }
-
-            .history-meta {
-                margin-top: 10px;
-                line-height: 1.7;
-            }
-
+            .stack-list,
             .capability-list {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
-            .capability-list li,
-            .actions-list li,
-            .wants-list li {
-                padding: 14px 16px;
-                border-radius: 18px;
+            .chip,
+            .capability-list li {
+                padding: 12px 14px;
+                border-radius: 16px;
                 border: 1px solid var(--line);
-                background: rgba(255, 255, 255, 0.035);
+                background: rgba(255, 255, 255, 0.04);
+                font-size: 0.84rem;
+            }
+
+            .want-card {
+                display: grid;
+                gap: 12px;
+            }
+
+            .want-head {
+                display: flex;
+                gap: 12px;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+
+            .stage {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 96px;
+                padding: 8px 10px;
+                border-radius: 999px;
+                border: 1px solid rgba(240, 170, 60, 0.24);
+                background: var(--accent-soft);
+                color: var(--ink);
+                font-size: 0.76rem;
+                letter-spacing: 0.08em;
+                text-transform: lowercase;
+            }
+
+            .stage.blocked {
+                border-color: rgba(255, 133, 112, 0.28);
+                background: rgba(255, 133, 112, 0.12);
+                color: var(--danger);
+            }
+
+            .stage.acting {
+                border-color: rgba(91, 188, 255, 0.28);
+                background: var(--accent-cool);
+            }
+
+            .stage.completed {
+                border-color: rgba(137, 219, 145, 0.28);
+                background: rgba(137, 219, 145, 0.14);
+            }
+
+            .want-meta,
+            .history-meta,
+            .detail-list li,
+            .focus-copy {
+                color: var(--muted);
+                line-height: 1.7;
+            }
+
+            .want-meta {
+                font-size: 0.94rem;
+            }
+
+            .detail-list {
+                margin-top: 14px;
+            }
+
+            .detail-list strong {
+                color: var(--ink);
+            }
+
+            .focus-card {
+                margin-top: 18px;
+                background:
+                    linear-gradient(180deg, rgba(240, 170, 60, 0.08), transparent 62%),
+                    rgba(255, 255, 255, 0.035);
+            }
+
+            .focus-copy {
+                font-size: 1rem;
+            }
+
+            .focus-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-top: 16px;
+            }
+
+            .read-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 14px;
+                border-radius: 14px;
+                border: 1px solid var(--line);
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .read-link:hover {
+                border-color: rgba(240, 170, 60, 0.32);
+                background: rgba(240, 170, 60, 0.08);
             }
 
             .action-button {
@@ -271,7 +342,7 @@
                 color: var(--ink);
                 text-align: left;
                 cursor: not-allowed;
-                opacity: 0.88;
+                opacity: 0.9;
             }
 
             .action-title {
@@ -284,26 +355,6 @@
                 margin-top: 6px;
                 color: var(--muted);
                 font-size: 0.8rem;
-            }
-
-            .wants-list li strong {
-                display: block;
-                color: var(--ink);
-                font-size: 0.95rem;
-            }
-
-            .wants-list li span {
-                display: block;
-                margin-top: 6px;
-                font-size: 0.9rem;
-            }
-
-            .details-list {
-                margin-top: 14px;
-            }
-
-            .details-list li strong {
-                color: var(--ink);
             }
 
             .empty-state {
@@ -319,19 +370,19 @@
                 .grid-primary,
                 .grid-secondary,
                 .context-grid,
-                .capability-list,
-                .stack-list {
+                .stats-grid,
+                .stack-list,
+                .capability-list {
                     grid-template-columns: 1fr;
                 }
 
-                .shell {
-                    width: min(100% - 24px, 1180px);
-                    padding-top: 18px;
+                .want-head {
+                    flex-direction: column;
                 }
 
-                .hero,
-                .panel {
-                    border-radius: 22px;
+                .shell {
+                    width: min(100% - 24px, 1200px);
+                    padding-top: 18px;
                 }
             }
         </style>
@@ -356,28 +407,28 @@
 
             <section class="grid grid-primary">
                 <article class="panel">
-                    <h2>Current context</h2>
-                    <p class="section-copy">Stored project context, the app stack, and the current cycle state surfaced without mutating history.</p>
+                    <h2>Project lens</h2>
+                    <p class="section-copy">The current project story, conventions, and stack surfaced without leaking local repo paths.</p>
 
                     <div class="context-grid">
                         <div class="context-card">
-                            <span class="list-label">Summary</span>
-                            <strong>{{ $projectContext->summary }}</strong>
-                        </div>
-
-                        <div class="context-card">
-                            <span class="list-label">Current phase</span>
+                            <span class="card-label">Current phase</span>
                             <strong>{{ $projectContext->current_phase }}</strong>
                         </div>
 
                         <div class="context-card">
-                            <span class="list-label">Repo path</span>
-                            <strong>{{ $projectContext->repo_path }}</strong>
+                            <span class="card-label">Primary branch</span>
+                            <strong>{{ $projectContext->primary_branch }}</strong>
                         </div>
 
                         <div class="context-card">
-                            <span class="list-label">Conventions</span>
+                            <span class="card-label">Read discipline</span>
                             <strong>{{ $projectContext->conventions[0] ?? 'No convention recorded.' }}</strong>
+                        </div>
+
+                        <div class="context-card">
+                            <span class="card-label">Builder posture</span>
+                            <strong>{{ $projectContext->conventions[1] ?? 'No additional convention recorded.' }}</strong>
                         </div>
                     </div>
 
@@ -389,15 +440,86 @@
                 </article>
 
                 <article class="panel">
+                    <h2>Want focus</h2>
+                    <p class="section-copy">The latest readable plan or grounded summary for the most useful active want to review next.</p>
+
+                    @if ($highlightedWant)
+                        <div class="focus-card">
+                            <span class="focus-label">{{ $highlightedWant['focus_label'] }}</span>
+                            <div class="want-head">
+                                <div>
+                                    <strong>{{ $highlightedWant['title'] }}</strong>
+                                    <p class="want-meta">Status: {{ $highlightedWant['status'] }} · Stage: {{ $highlightedWant['stage'] }}</p>
+                                </div>
+
+                                <span class="stage {{ $highlightedWant['stage'] }}">{{ $highlightedWant['stage'] }}</span>
+                            </div>
+
+                            <p class="focus-copy">{{ $highlightedWant['focus_text'] }}</p>
+
+                            @if ($highlightedWant['grounded_summary'])
+                                <ul class="detail-list">
+                                    <li><strong>Grounded summary:</strong> {{ $highlightedWant['grounded_summary'] }}</li>
+                                </ul>
+                            @endif
+
+                            <div class="focus-actions">
+                                <a class="read-link" href="{{ route('wants.show', ['want' => $highlightedWant['id']]) }}">
+                                    <span class="link-label">Read-only detail</span>
+                                    <strong>Open want #{{ $highlightedWant['id'] }}</strong>
+                                </a>
+                            </div>
+                        </div>
+                    @else
+                        <p class="empty-state">No active wants are currently stored for {{ $project->name }}.</p>
+                    @endif
+                </article>
+            </section>
+
+            <section class="panel">
+                <h2>Active wants</h2>
+                <p class="section-copy">Real stages derived from stored history records, newest active wants first.</p>
+
+                @if ($activeWants !== [])
+                    <ul class="wants-list">
+                        @foreach ($activeWants as $want)
+                            <li class="want-card">
+                                <div class="want-head">
+                                    <div>
+                                        <strong>{{ $want['title'] }}</strong>
+                                        <p class="want-meta">Status: {{ $want['status'] }} · Stage: {{ $want['stage'] }}</p>
+                                    </div>
+
+                                    <span class="stage {{ $want['stage'] }}">{{ $want['stage'] }}</span>
+                                </div>
+
+                                <p class="want-meta">{{ $want['summary'] }}</p>
+
+                                <div class="focus-actions">
+                                    <a class="read-link" href="{{ route('wants.show', ['want' => $want['id']]) }}">
+                                        <span class="link-label">Read-only detail</span>
+                                        <strong>Review want #{{ $want['id'] }}</strong>
+                                    </a>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="empty-state">No active wants have been recorded yet.</p>
+                @endif
+            </section>
+
+            <section class="grid grid-secondary">
+                <article class="panel">
                     <h2>Open cycle</h2>
                     <p class="section-copy">The newest unfinished want in the local history spine.</p>
 
                     @if ($openCycle)
                         <div class="history-card">
-                            <span class="list-label">Want #{{ $openCycle->want->id }}</span>
-                            <strong class="history-title">{{ $openCycle->want->title }}</strong>
+                            <span class="card-label">Want #{{ $openCycle->want->id }}</span>
+                            <strong>{{ $openCycle->want->title }}</strong>
 
-                            <ul class="details-list">
+                            <ul class="detail-list">
                                 <li><strong>Status:</strong> {{ $openCycle->want->status }}</li>
                                 <li><strong>Action status:</strong> {{ $openCycle->actionRun?->status ?? 'none' }}</li>
                                 <li><strong>Reason:</strong> <span class="{{ str_contains(strtolower($openCycle->openReason ?? ''), 'defect') ? 'danger-note' : '' }}">{{ $openCycle->openReason }}</span></li>
@@ -407,16 +529,29 @@
                         <p class="empty-state">No open cycle is currently stored for {{ $project->name }}.</p>
                     @endif
                 </article>
-            </section>
 
-            <section class="grid grid-secondary">
+                <article class="panel">
+                    <h2>Latest completed outcome</h2>
+                    <p class="section-copy">The newest fully closed cycle with a stored outcome.</p>
+
+                    @if ($latestCompletedOutcome)
+                        <div class="history-card">
+                            <span class="card-label">Want #{{ $latestCompletedOutcome->want->id }}</span>
+                            <strong>{{ $latestCompletedOutcome->want->title }}</strong>
+                            <p class="history-meta">{{ $latestCompletedOutcome->outcomeLog?->outcome }}</p>
+                        </div>
+                    @else
+                        <p class="empty-state">No completed outcome has been recorded yet.</p>
+                    @endif
+                </article>
+
                 <article class="panel">
                     <h2>Capabilities</h2>
                     <p class="section-copy">Current read and write-safe artisan surfaces already available in the app.</p>
 
                     <ul class="capability-list">
                         @foreach ($capabilities as $capability)
-                            <li class="chip">{{ $capability }}</li>
+                            <li>{{ $capability }}</li>
                         @endforeach
                     </ul>
                 </article>
@@ -430,41 +565,12 @@
                             <li>
                                 <button class="action-button" type="button" disabled aria-disabled="true">
                                     <span class="action-title">{{ $action }}</span>
-                                    <span class="action-command">CLI-first flow only in phase 1</span>
+                                    <span class="action-command">CLI-first flow only in dashboard phase 2</span>
                                 </button>
                             </li>
                         @endforeach
                     </ul>
                 </article>
-
-                <article class="panel">
-                    <h2>Latest completed outcome</h2>
-                    <p class="section-copy">The newest fully closed cycle with a stored outcome.</p>
-
-                    @if ($latestCompletedOutcome)
-                        <div class="history-card">
-                            <span class="list-label">Want #{{ $latestCompletedOutcome->want->id }}</span>
-                            <strong class="history-title">{{ $latestCompletedOutcome->want->title }}</strong>
-                            <p class="history-meta">{{ $latestCompletedOutcome->outcomeLog?->outcome }}</p>
-                        </div>
-                    @else
-                        <p class="empty-state">No completed outcome has been recorded yet.</p>
-                    @endif
-                </article>
-            </section>
-
-            <section class="panel">
-                <h2>Latest three wants</h2>
-                <p class="section-copy">Recent intent, newest first, pulled from the existing history summary read model.</p>
-
-                <ul class="wants-list">
-                    @foreach ($recentWants as $want)
-                        <li>
-                            <strong>{{ $want->title }}</strong>
-                            <span>Status: {{ $want->status }}</span>
-                        </li>
-                    @endforeach
-                </ul>
             </section>
         </div>
     </body>

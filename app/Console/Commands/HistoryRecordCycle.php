@@ -7,16 +7,18 @@ use App\Actions\History\CreatePlanRevision;
 use App\Actions\History\CreateWant;
 use App\Actions\History\LogOutcome;
 use App\Actions\History\SaveConstraintSnapshot;
+use App\Actions\History\UpdateWantStatus;
 use App\Data\History\CreateActionRunData;
 use App\Data\History\CreatePlanRevisionData;
 use App\Data\History\CreateWantData;
 use App\Data\History\LogOutcomeData;
 use App\Data\History\SaveConstraintSnapshotData;
-use App\Models\ConstraintSnapshot;
+use App\Data\History\UpdateWantStatusData;
 use App\Models\FactSource;
 use App\Models\PlanRevision;
 use App\Models\Project;
 use App\Models\ValidationRun;
+use App\Models\Want;
 use App\Support\Audit\AuditContext;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +29,7 @@ class HistoryRecordCycle extends Command
     protected $signature = 'history:record-cycle
         {title : Want title}
         {--project=kelajak-maskan : Project slug}
+        {--want-id= : Existing want id to advance}
         {--raw-text= : Raw want text}
         {--want-status=draft : Want status}
         {--constraints= : JSON object for constraint snapshot payload}
@@ -57,6 +60,12 @@ class HistoryRecordCycle extends Command
         if ($project === null) {
             $this->error(sprintf('Project [%s] not found.', (string) $this->option('project')));
 
+            return self::FAILURE;
+        }
+
+        $existingWant = $this->resolveExistingWant($project);
+
+        if ($this->targetsExistingWant() && ! $existingWant instanceof Want) {
             return self::FAILURE;
         }
 
@@ -102,16 +111,28 @@ class HistoryRecordCycle extends Command
             actorRef: (string) $this->option('actor-ref'),
         );
 
-        $result = DB::transaction(function () use ($project, $auditContext, $constraintsPayload, $factSources): array {
-            $want = app(CreateWant::class)->handle(
-                new CreateWantData(
-                    projectId: $project->id,
-                    title: (string) $this->argument('title'),
-                    rawText: (string) ($this->option('raw-text') ?: $this->argument('title')),
-                    status: (string) $this->option('want-status'),
-                ),
-                $auditContext,
-            );
+        $result = DB::transaction(function () use ($project, $auditContext, $constraintsPayload, $factSources, $existingWant): array {
+            $want = $existingWant;
+
+            if (! $want instanceof Want) {
+                $want = app(CreateWant::class)->handle(
+                    new CreateWantData(
+                        projectId: $project->id,
+                        title: (string) $this->argument('title'),
+                        rawText: (string) ($this->option('raw-text') ?: $this->argument('title')),
+                        status: (string) $this->option('want-status'),
+                    ),
+                    $auditContext,
+                );
+            } elseif ($this->shouldUpdateExistingWantStatus($want)) {
+                $want = app(UpdateWantStatus::class)->handle(
+                    new UpdateWantStatusData(
+                        wantId: $want->id,
+                        status: (string) $this->option('want-status'),
+                    ),
+                    $auditContext,
+                );
+            }
 
             $constraintSnapshot = null;
             if ($constraintsPayload !== null) {
@@ -151,7 +172,7 @@ class HistoryRecordCycle extends Command
                 $planRevision = app(CreatePlanRevision::class)->handle(
                     new CreatePlanRevisionData(
                         wantId: $want->id,
-                        version: 1,
+                        version: $this->nextPlanRevisionVersion($want),
                         planText: (string) $this->option('plan-text'),
                         groundedSummary: (string) $this->option('grounded-summary'),
                     ),
@@ -213,6 +234,49 @@ class HistoryRecordCycle extends Command
         $this->line(sprintf('Outcome log id: %s', $result['outcome_log_id'] ?? 'none'));
 
         return self::SUCCESS;
+    }
+
+    private function resolveExistingWant(Project $project): ?Want
+    {
+        if (! $this->targetsExistingWant()) {
+            return null;
+        }
+
+        $wantId = (int) $this->option('want-id');
+
+        $want = Want::query()
+            ->whereKey($wantId)
+            ->where('project_id', $project->id)
+            ->first();
+
+        if ($want === null) {
+            $this->error(sprintf('Want [%d] not found for project [%s].', $wantId, $project->slug));
+        }
+
+        return $want;
+    }
+
+    private function targetsExistingWant(): bool
+    {
+        $wantId = $this->option('want-id');
+
+        return is_scalar($wantId) && trim((string) $wantId) !== '';
+    }
+
+    private function shouldUpdateExistingWantStatus(Want $want): bool
+    {
+        if (! $this->input->hasParameterOption('--want-status')) {
+            return false;
+        }
+
+        return $want->status !== (string) $this->option('want-status');
+    }
+
+    private function nextPlanRevisionVersion(Want $want): int
+    {
+        $latestVersion = (int) ($want->planRevisions()->max('version') ?? 0);
+
+        return $latestVersion + 1;
     }
 
     /**

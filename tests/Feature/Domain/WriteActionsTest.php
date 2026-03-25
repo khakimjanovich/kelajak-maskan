@@ -1,17 +1,19 @@
 <?php
 
-use App\Actions\History\CreateProject;
 use App\Actions\History\CreateActionRun;
 use App\Actions\History\CreatePlanRevision;
+use App\Actions\History\CreateProject;
 use App\Actions\History\CreateWant;
 use App\Actions\History\LogOutcome;
 use App\Actions\History\SaveConstraintSnapshot;
+use App\Actions\History\UpdateWantStatus;
 use App\Data\History\CreateActionRunData;
 use App\Data\History\CreatePlanRevisionData;
 use App\Data\History\CreateProjectData;
 use App\Data\History\CreateWantData;
 use App\Data\History\LogOutcomeData;
 use App\Data\History\SaveConstraintSnapshotData;
+use App\Data\History\UpdateWantStatusData;
 use App\Models\ActionRun;
 use App\Models\AuditLog;
 use App\Models\PlanRevision;
@@ -83,6 +85,51 @@ it('writes a want row and audit log through create want', function (): void {
         'title' => 'Track grounded wants',
         'raw_text' => 'I want write actions first.',
         'status' => 'draft',
+    ]);
+});
+
+it('updates a want status and writes an audit log through update want status', function (): void {
+    $project = Project::create([
+        'name' => 'Kelajak-Maskan',
+        'slug' => 'kelajak-maskan',
+    ]);
+
+    $want = Want::create([
+        'project_id' => $project->id,
+        'title' => 'Track grounded wants',
+        'raw_text' => 'I want write actions first.',
+        'status' => 'draft',
+    ]);
+
+    $updatedWant = app(UpdateWantStatus::class)->handle(
+        new UpdateWantStatusData(
+            wantId: $want->id,
+            status: 'completed',
+        ),
+        new AuditContext(
+            actorType: 'assistant',
+            actorRef: 'codex',
+        ),
+    );
+
+    $this->assertDatabaseCount('wants', 1);
+    $this->assertDatabaseCount('audit_logs', 1);
+
+    $auditLog = AuditLog::query()->sole();
+
+    expect($updatedWant->id)->toBe($want->id);
+    expect($updatedWant->status)->toBe('completed');
+    expect($auditLog->action_name)->toBe('history.update_want_status');
+    expect($auditLog->target_type)->toBe('want');
+    expect($auditLog->target_id)->toBe($want->id);
+    expect($auditLog->status)->toBe('success');
+    expect($auditLog->input_payload)->toBe([
+        'want_id' => $want->id,
+        'previous_status' => 'draft',
+        'status' => 'completed',
+    ]);
+    expect($auditLog->result_payload)->toBe([
+        'want_id' => $want->id,
     ]);
 });
 
